@@ -91,31 +91,11 @@ def get_match_results():
             scorecard = cell[6].text
             match_link = 'https://stats.espncricinfo.com/' + cell[6].a.get('href')
 
-            # print(f'Team 1: {team1}')
-            # print(f'Team 2: {team2}')
-            # print(f'Winner: {winner}')
-            # print(f'Margin: {margin}')
-            # print(f'Ground: {ground}')
-            # print(f'Match Date: {match_date}')
-            # print(f'Scorecard: {scorecard}')
-            # print(f'Match link: {match_link}')
-            # print('--------------------------------')
-
             if winner != 'abandoned':
                 get_bowling_summary(match_link, scorecard)
             # Add data to database
             cur.execute('''INSERT OR IGNORE INTO match_results (team1, team2, winner, margin, ground, match_date, scorecard)
                 VALUES (?, ?, ?, ?, ?, ?, ?)''', (team1, team2, winner, margin, ground, match_date, scorecard))
-            
-            # Create json dictionary
-            dict = {
-                'team1' : team1,
-                'team2' : team2,
-                'winner' : winner,
-                'margin' : margin,
-                'match_date' : match_date,
-                'scorecard' : scorecard
-            }
 
             match_results.append(dict)
             conn.commit()
@@ -168,22 +148,6 @@ def get_bowling_summary(url, match_id):
                         # Get player link
                         player_href = cell[0].a.get('href')
                         player_link = 'https://www.espncricinfo.com' + player_href
-
-                        # print(f'Match Info: {match_info}')
-                        # print(f'Player Link: {player_link}')
-                        # print(f'Bowling Team: {bowling_team}')
-                        # print(f'Bowler: {bowler}')
-                        # print(f'Overs: {overs}')
-                        # print(f'Maiden: {maiden}')
-                        # print(f'Runs: {runs}')
-                        # print(f'Wickets: {wickets}')
-                        # print(f'Economy: {economy}')
-                        # print(f'Zeros: {zeros}')
-                        # print(f'Fours: {fours}')
-                        # print(f'Sixes: {sixes}')
-                        # print(f'Wides: {wides}')
-                        # print(f'No Balls: {no_balls}')
-                        # print(f'Match ID: {match_id}')
                         
                         # Add data to database
                         cur.execute('''INSERT OR IGNORE INTO bowling_summary (match, bowling_team, bowler, overs, maiden, runs, wickets, economy, zeros, fours, sixes, wides, no_balls, match_id)
@@ -261,18 +225,6 @@ def get_batting_summary(soup, match_info, team1, team2, match_id):
                     # Get player link
                     player_href = cell[0].a.get('href')
                     player_link = 'https://www.espncricinfo.com' + player_href
-
-                    # print(f'Match Info: {match_info}')
-                    # print(f'Batter: {batter}')
-                    # print(f'Batting Team: {batting_team}')
-                    # print(f'Batting Position: {batting_pos}')
-                    # print(f'Runs: {runs}')
-                    # print(f'Balls: {balls}')
-                    # print(f'Fours: {fours}')
-                    # print(f'Sixes: {sixes}')
-                    # print(f'SR: {sr}')
-                    # print(f'Dismissal: {dismissal}')
-                    # print(f'Match ID: {match_id}')
                     
                     # Add data to database
                     cur.execute('''INSERT OR IGNORE INTO batting_summary (match, batting_team, batter, batting_pos, runs, balls, fours, sixes, sr, dismissal, match_id)
@@ -343,22 +295,11 @@ def get_player_info(url):
             elif 'Education' in item.p.text:
                 education = item.span.text
 
-        # batting_style = data[3].span.h5.text
-        # bowling_style = data[4].span.h5.text
-        # playing_role = data[5].span.h5.text
         try:
             description = soup.find('div', class_='ci-player-bio-content').text
         except:
             description = 'None'
         image = ''
-
-        print(f'Name: {name}')
-        print(f'Team: {team}')
-        print(f'Batting Style: {batting_style}')
-        print(f'Bowling Style: {bowling_style}')
-        print(f'Playing Role: {playing_role}')
-        # print(f'Description: {description}')
-        print(f'Education: {education}')
 
         cur.execute('''INSERT OR IGNORE INTO player_info (name, team, image, batting_style, bowling_style, playing_role, description, education, link)
             VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)''', (name, team, image, batting_style, bowling_style, playing_role, description, education, url))
@@ -369,7 +310,7 @@ conn = sqlite3.connect('Cricket_Info.db')
 cur = conn.cursor()
 
 # Reset database
-reset_database()
+# reset_database()
 
 # Get match results
 get_match_results()
